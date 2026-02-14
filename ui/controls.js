@@ -177,7 +177,7 @@ class App {
         this.dnd.circuit = this.circuit; // update ref
 
         // Reset viewer
-        this.viewer.updateState(this.inputState.toStateVector(), this.circuit.numQubits);
+        this.viewer.updateState(this.inputState.toStateVector(), this.circuit.numQubits, []);
         this.viewer.updateHistogram({}, this.shots);
     }
 
@@ -187,7 +187,7 @@ class App {
         this.animator.pause();
         this.animator.reset(); // shows initial state
         // Actually initial state might change if input changed
-        this.viewer.updateState(this.inputState.toStateVector(), this.circuit.numQubits);
+        this.viewer.updateState(this.inputState.toStateVector(), this.circuit.numQubits, []);
         this.canvas.render();
     }
 

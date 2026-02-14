@@ -76,7 +76,8 @@ export class QuantumEngine {
                 gates,
                 measurementResult ? {
                     probabilities: measurementResult.probabilities,
-                    outcomes: measurementResult.outcomes
+                    outcomes: measurementResult.outcomes,
+                    measuredIndices: measurementResult.measuredIndices
                 } : null
             ));
         }
@@ -329,6 +330,7 @@ export class QuantumEngine {
         if (measureMode === 'probability') {
             return {
                 probabilities: fullStateProbs,
+                measuredIndices: measuredIndices, // Return indices for marginal calculation
                 nextState: null // state doesn't collapse
             };
         }
@@ -405,6 +407,7 @@ export class QuantumEngine {
             probabilities: fullStateProbs, // Or strictly should be the distribution of the result?
             // UI expects probabilities to display. Usually "Probability of measured result".
             // But the previous implementation showed the full distribution. Let's stick to full distribution for info.
+            measuredIndices: measuredIndices,
             nextState: nextState
         };
     }

@@ -791,8 +791,24 @@ body {
     min-width: 2px;
 }
 
-.hist-bar-fill.probability {
-    background: linear-gradient(90deg, var(--accent-gold), var(--accent-orange));
+.hist-bar-fill.measurement-fill {
+    background: linear-gradient(90deg, var(--accent-orange), var(--accent-gold));
+}
+
+.measurements-info,
+.histogram-info {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.no-data {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: 10px;
+    text-align: center;
 }
 
 .amp-bar-value,

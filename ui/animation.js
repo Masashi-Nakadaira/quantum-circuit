@@ -121,7 +121,11 @@ export class AnimationController {
 
         // Update Viewer
         // Note: step.stateVector is the state AFTER the column.
-        this.viewer.updateState(step.stateVector, Math.round(Math.log2(step.stateVector.length)));
+        this.viewer.updateState(
+            step.stateVector,
+            Math.round(Math.log2(step.stateVector.length)),
+            this.steps.slice(0, idx + 1)
+        );
 
         if (step.measurement && step.measurement.outcomes) {
             const outcomes = step.measurement.outcomes;
