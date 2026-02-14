@@ -9,7 +9,7 @@
 ES Modules を使用しているため、ローカルHTTPサーバーが必要です。
 
 ```bash
-cd /Users/XXX/量子回路 (ファイルのPATH）
+cd /Users/nakadairamasashi/量子回路
 python3 -m http.server 8080
 ```
 
@@ -82,7 +82,7 @@ python3 -m http.server 8080
 
 - **Single**: I, X, Y, Z, H, S, T
 - **Rotation**: Rx, Ry, Rz (θパラメータ指定)
-- **Multi**: CX, CZ, SWAP
+- **Multi**: CNOT, CZ, SWAP
 - **Measure**: M
 
 ---
