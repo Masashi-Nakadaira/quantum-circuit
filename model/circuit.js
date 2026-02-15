@@ -232,6 +232,8 @@ export class InputState {
         this.vector = this._createZeroState(numQubits);
         /** @type {[number, number][][]|null} */
         this.densityMatrix = null;
+        /** @type {string|null} Original TeX source for round-trip display */
+        this.texSource = null;
     }
 
     get isMixed() {
@@ -278,7 +280,8 @@ export class InputState {
             numQubits: this.numQubits,
             vector: this.vector,
             presets: this.presets,
-            links: this.links
+            links: this.links,
+            texSource: this.texSource || null,
         };
     }
 
@@ -286,6 +289,7 @@ export class InputState {
         const s = new InputState(obj.numQubits);
         if (obj.links) s.links = obj.links;
         if (obj.presets) s.presets = obj.presets;
+        if (obj.texSource) s.texSource = obj.texSource;
 
         if (obj.vector) {
             s.vector = obj.vector;
