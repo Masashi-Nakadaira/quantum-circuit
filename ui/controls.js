@@ -53,14 +53,11 @@ class App {
 
         const btnInputConfig = document.getElementById('btn-input-config');
         if (btnInputConfig) {
-            console.log('[Controls] Binding input config button');
-            btnInputConfig.onclick = () => {
-                console.log('[Controls] Input button clicked');
-                this.inputDrawer.open();
-            };
-        } else {
-            console.warn('[Controls] Input config button not found');
+            btnInputConfig.onclick = () => this.inputDrawer.open();
         }
+
+        this._initSidebarPresets();
+        this._initResizer();
 
         document.getElementById('demo-h').onclick = () => this._loadDemo('h-measure');
         document.getElementById('demo-bell').onclick = () => this._loadDemo('bell');
@@ -179,14 +176,14 @@ class App {
         // Reset viewer
         this.viewer.updateState(this.inputState.toStateVector(), this.circuit.numQubits, []);
         this.viewer.updateHistogram({}, this.shots);
+
+        // Update sidebar presets to match qubit count
+        this._initSidebarPresets();
     }
 
     _onCircuitChange() {
-        // Re-simulate automatically or just reset?
-        // Reset animation to start
         this.animator.pause();
-        this.animator.reset(); // shows initial state
-        // Actually initial state might change if input changed
+        this.animator.reset();
         this.viewer.updateState(this.inputState.toStateVector(), this.circuit.numQubits, []);
         this.canvas.render();
     }
@@ -229,8 +226,154 @@ class App {
         this.animator.loadSimulation(steps);
     }
 
+    _initSidebarPresets() {
+        const container = document.getElementById('sidebar-input-presets');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const numQubits = this.circuit.numQubits;
+        const links = this.inputState.links;
+
+        // Group into clusters based on links
+        const clusters = [];
+        let currentCluster = [0];
+        for (let i = 0; i < numQubits - 1; i++) {
+            if (links[i]) {
+                currentCluster.push(i + 1);
+            } else {
+                clusters.push(currentCluster);
+                currentCluster = [i + 1];
+            }
+        }
+        clusters.push(currentCluster);
+
+        clusters.forEach((cluster, clusterIdx) => {
+            const groupWrap = document.createElement('div');
+            groupWrap.className = 'input-cluster ' + (cluster.length > 1 ? 'linked' : '');
+
+            const isMulti = cluster.length > 1;
+            const presets = isMulti ?
+                (cluster.length === 2 ? ['Φ+', 'Φ−', 'Ψ+', 'Ψ−'] : ['GHZ', 'W']) :
+                ['|0⟩', '|1⟩', '|+⟩', '|−⟩'];
+
+            cluster.forEach((q, idxInCluster) => {
+                const row = document.createElement('div');
+                row.className = 'input-row-s';
+                row.innerHTML = `<span class="input-q-label">q${q}</span>`;
+
+                if (idxInCluster === 0) {
+                    // Render preset buttons only for the first row of the cluster if linked, 
+                    // or for every row if single.
+                    presets.forEach(p => {
+                        const btn = document.createElement('button');
+                        btn.className = 'preset-btn-s';
+                        if (this.inputState.presets && this.inputState.presets[cluster[0]] === p) btn.classList.add('active');
+                        btn.textContent = p;
+                        btn.onclick = () => {
+                            this._setClusterPreset(cluster, p);
+                            this._updatePresetButtons();
+                        };
+                        row.appendChild(btn);
+                    });
+                } else if (!isMulti) {
+                    // This case shouldn't happen with current logic but for safety
+                }
+
+                groupWrap.appendChild(row);
+
+                // Add link button between qubits within the cluster (handled by loop below)
+                // Actually, link buttons are between rows.
+                if (q < numQubits - 1) {
+                    const linkBtn = document.createElement('button');
+                    linkBtn.className = 'link-toggle ' + (links[q] ? 'active' : '');
+                    linkBtn.innerHTML = links[q] ? '🔗' : '⛓️';
+                    linkBtn.onclick = () => this._toggleLink(q);
+                    groupWrap.appendChild(linkBtn);
+                }
+            });
+
+            container.appendChild(groupWrap);
+        });
+    }
+
+    _toggleLink(idx) {
+        this.inputState.links[idx] = !this.inputState.links[idx];
+
+        // When linking, reset presets for those qubits to stay consistent
+        // We'll just re-init everything to match current presets or defaults.
+        this.inputState.vector = this.inputState._presetsToVector(this.inputState.presets);
+
+        this._reloadUI();
+        this._onCircuitChange();
+    }
+
+    _setClusterPreset(cluster, preset) {
+        if (!this.inputState.presets) {
+            this.inputState.presets = Array(this.circuit.numQubits).fill('|0⟩');
+        }
+        // Set same preset for all qubits in cluster (the vector logic will use cluster[0]'s preset)
+        cluster.forEach(q => {
+            this.inputState.presets[q] = preset;
+        });
+
+        this.inputState.vector = this.inputState._presetsToVector(this.inputState.presets);
+        this.inputState.densityMatrix = null;
+
+        this._reloadUI();
+        this._onCircuitChange();
+    }
+
+    _initResizer() {
+        const resizer = document.getElementById('panel-resizer');
+        if (!resizer) return;
+
+        const topPanel = document.querySelector('.top-panel');
+        const bottomPanel = document.querySelector('.bottom-panel');
+        const main = document.querySelector('.app-main');
+
+        let isDragging = false;
+
+        resizer.onmousedown = (e) => {
+            isDragging = true;
+            resizer.classList.add('active');
+            document.body.style.cursor = 'row-resize';
+            e.preventDefault();
+        };
+
+        window.onmousemove = (e) => {
+            if (!isDragging) return;
+
+            const mainRect = main.getBoundingClientRect();
+            // Calculate relative Y position within app-main
+            const relativeY = e.clientY - mainRect.top;
+
+            // Convert to flex ratios or absolute heights.
+            // Absolute heights are more stable for "pinning" one side.
+            // Let's adjust flex-grow of both.
+            const totalHeight = mainRect.height;
+            const topFlex = relativeY / totalHeight;
+            const bottomFlex = 1 - topFlex;
+
+            // Constrain
+            if (topFlex > 0.1 && topFlex < 0.9) {
+                topPanel.style.flex = topFlex;
+                bottomPanel.style.flex = bottomFlex;
+            }
+        };
+
+        window.onmouseup = () => {
+            if (isDragging) {
+                isDragging = false;
+                resizer.classList.remove('active');
+                document.body.style.cursor = 'default';
+            }
+        };
+    }
+
     _toast(msg) {
         const t = document.getElementById('toast');
+        if (!t) return;
         t.textContent = msg;
         t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2000);

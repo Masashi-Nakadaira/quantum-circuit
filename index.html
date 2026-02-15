@@ -31,10 +31,10 @@
       </div>
     </div>
     <div class="header-right">
-      <button class="icon-btn" id="btn-input-config" title="Configure Input">⚙ Input</button>
-      <button class="icon-btn" id="btn-learn" title="Learn Mode">📘 Learn</button>
-      <button class="icon-btn" id="btn-save" title="Save">💾 Save</button>
-      <button class="icon-btn" id="btn-load" title="Load">📂 Load</button>
+      <button class="icon-btn" id="btn-input-config" title="Advanced Input Settings">Advanced Input</button>
+      <button class="icon-btn" id="btn-learn" title="Learn Mode">Learn</button>
+      <button class="icon-btn" id="btn-save" title="Save">Save</button>
+      <button class="icon-btn" id="btn-load" title="Load">Load</button>
     </div>
   </header>
 
@@ -110,8 +110,12 @@
               <div class="drag-gate" draggable="true" data-gate="Measure" style="--gc:#f97316">M</div>
             </div>
           </div>
-          <!-- Input state presets -->
-
+          <div class="sidebar-section input-section">
+            <div class="sidebar-label">Initial State</div>
+            <div id="sidebar-input-presets" class="input-presets-sidebar">
+              <!-- JS fills this with 0, 1, +, -, ERP etc -->
+            </div>
+          </div>
         </div>
 
         <!-- Circuit SVG canvas -->
@@ -121,6 +125,9 @@
         </div>
       </div>
     </section>
+
+    <!-- Resizer handle -->
+    <div class="resizer-h" id="panel-resizer"></div>
 
     <!-- ═══ Bottom: State Viewer ═════════════════════════ -->
     <section class="panel bottom-panel">

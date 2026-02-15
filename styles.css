@@ -63,7 +63,7 @@
     background: rgba(0, 0, 0, 0.2);
     padding: 10px;
     border-radius: var(--radius-sm);
-    border-left: 3px solid var(--accent-blue);
+    border-left: 3px solid var(--accent-cyan);
 }
 
 .drawer-actions {
@@ -107,7 +107,74 @@
     background: rgba(0, 0, 0, 0.1);
 }
 
-/* Input Rows (New Drawer Style) */
+/* Input Tabs */
+.input-mode-tabs {
+    display: flex;
+    background: var(--bg-input);
+    padding: 2px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.input-tab {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.input-tab.active {
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.matrix-grid {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.matrix-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.matrix-input {
+    width: 60px;
+    height: 30px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-align: center;
+    padding: 2px;
+}
+
+.matrix-input:focus {
+    border-color: var(--accent-cyan);
+    outline: none;
+}
+
+.matrix-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    font-family: var(--font-mono);
+}
+
 .input-row {
     margin-bottom: 16px;
     padding-bottom: 12px;
@@ -172,47 +239,77 @@
 }
 
 .tool-btn.primary {
-    background: var(--accent-blue);
-    color: white;
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
     border: none;
 }
 
 .tool-btn.primary:hover {
-    background: var(--accent-cyan);
+    background: white;
     color: var(--bg-primary);
 }
 
-/* ============================================================
-   styles.css — Quantum Circuit Simulator Theme & Layout
-   ============================================================ */
-
-/* ─── CSS Variables ─────────────────────────────────────────── */
+/* ─── Apple-inspired Modern Design System ─────────────────── */
 :root {
-    --bg-primary: #0a0e1a;
-    --bg-secondary: #111827;
-    --bg-panel: #151d2e;
-    --bg-card: #1a2235;
-    --bg-hover: #1e293b;
-    --bg-input: #0f172a;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-bright: rgba(255, 255, 255, 0.15);
-    --text-primary: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --accent-blue: #3b82f6;
-    --accent-purple: #a855f7;
-    --accent-gold: #ffd700;
-    --accent-cyan: #22d3ee;
-    --accent-green: #22c55e;
-    --accent-red: #ef4444;
-    --accent-orange: #f97316;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    /* Color Palette - Vibrant but Sophisticated */
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-panel: #2c2c2e;
+    --bg-card: rgba(255, 255, 255, 0.08);
+    /* Glass effect */
+    --bg-hover: rgba(255, 255, 255, 0.12);
+    --bg-input: rgba(0, 0, 0, 0.4);
+
+    --border: rgba(255, 255, 255, 0.1);
+    --border-bright: rgba(255, 255, 255, 0.2);
+
+    --text-primary: #ffffff;
+    --text-secondary: #ebebf5;
+    --text-muted: #8e8e93;
+
+    --accent-blue: #007aff;
+    --accent-purple: #af52de;
+    --accent-gold: #ffcc00;
+    --accent-cyan: #5ac8fa;
+    --accent-green: #34c759;
+    --accent-red: #ff3b30;
+    --accent-orange: #ff9500;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+
+    --glass-blur: blur(24px);
+    --transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    /* SF Pro / Inter stacks */
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', menlo, monospace;
 }
+
+/* ─── Animations ─── */
+@keyframes slide-up {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 
 /* ─── Reset & Base ──────────────────────────────────────────── */
 *,
@@ -241,90 +338,181 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 16px;
-    background: linear-gradient(135deg, var(--bg-secondary), rgba(17, 24, 39, 0.95));
+    padding: 0 20px;
+    background: var(--bg-secondary);
     border-bottom: 1px solid var(--border);
-    height: 44px;
+    height: 52px;
     flex-shrink: 0;
     z-index: 100;
 }
 
-.app-title {
-    font-size: 15px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+/* Header Buttons */
+.header-right {
+    display: flex;
+    gap: 12px;
+}
+
+.icon-btn {
+    padding: 6px 16px;
+    background: transparent;
+    border: 1.5px solid var(--accent-cyan);
+    border-radius: 50px;
+    /* Pill shape */
+    color: var(--accent-cyan);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.icon-btn:hover {
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    box-shadow: 0 0 12px rgba(90, 200, 250, 0.4);
+}
+
+.app-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
     white-space: nowrap;
 }
 
 .title-icon {
-    font-size: 18px;
-    -webkit-text-fill-color: initial;
-    filter: drop-shadow(0 0 6px var(--accent-cyan));
+    font-size: 20px;
+    color: var(--accent-cyan);
+    filter: drop-shadow(0 0 8px rgba(90, 200, 250, 0.4));
 }
 
 .demo-buttons {
     display: flex;
-    gap: 4px;
+    gap: 8px;
 }
 
 .demo-btn {
-    padding: 4px 10px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-bright);
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
     font-size: 11px;
-    font-family: var(--font-main);
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
-    white-space: nowrap;
 }
 
 .demo-btn:hover {
-    background: var(--bg-hover);
+    border-color: var(--accent-cyan);
     color: var(--accent-cyan);
+}
+
+/* Sidebar Input Presets & Clustering */
+.input-cluster {
+    position: relative;
+    padding: 4px;
+    margin-bottom: 24px;
+    /* Space for link button or gap */
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.input-cluster.linked {
+    background: rgba(34, 211, 238, 0.05);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.05);
+}
+
+.input-cluster .input-row-s {
+    margin-bottom: 4px;
+}
+
+.link-toggle {
+    position: absolute;
+    bottom: -14px;
+    left: 45px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.link-toggle:hover {
+    opacity: 1;
+    transform: scale(1.1);
     border-color: var(--accent-cyan);
 }
 
-.header-right {
-    display: flex;
-    gap: 4px;
+.link-toggle.active {
+    opacity: 1;
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.1);
 }
 
-.icon-btn {
-    padding: 4px 10px;
-    background: var(--bg-card);
+.preset-btn-s {
+    padding: 4px 8px;
+    font-size: 9px;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-secondary);
-    font-size: 11px;
+    color: var(--text-muted);
+    border-radius: 4px;
     cursor: pointer;
-    transition: var(--transition);
-    font-family: var(--font-main);
+    margin-right: 4px;
+    transition: all 0.2s;
 }
 
-.icon-btn:hover {
-    background: var(--bg-hover);
-    border-color: var(--accent-blue);
+.preset-btn-s:hover {
+    border-color: var(--accent-cyan);
     color: var(--text-primary);
 }
 
-/* ─── Main 2-Panel Layout ───────────────────────────────────── */
+.preset-btn-s.active {
+    background: var(--accent-cyan);
+    color: #000;
+    border-color: var(--accent-cyan);
+    font-weight: bold;
+}
+
+.input-q-label {
+    display: inline-block;
+    width: 30px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+/* --- Layout --- */
+.app-container {
+    height: 100%;
+    overflow: hidden;
+}
+
 .app-main {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 44px);
+    height: calc(100vh - 52px);
+    background: var(--bg-primary);
 }
 
 .panel {
     background: var(--bg-panel);
-    border: 1px solid var(--border);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -332,27 +520,57 @@ body {
 
 /* ─── Top Panel: Toolbar + Sidebar + Canvas ─────────────────── */
 .top-panel {
-    flex: 1 1 60%;
-    min-height: 200px;
+    flex: 8;
+    /* Aggressively maximize circuit */
+    min-height: 150px;
 }
+
+/* ─── Resizer ─── */
+.resizer-h {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    /* Faint white line by default */
+    cursor: row-resize;
+    flex-shrink: 0;
+    transition: background 0.2s, box-shadow 0.2s;
+    position: relative;
+    z-index: 100;
+}
+
+.resizer-h:hover,
+.resizer-h.active {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Bottom Panel: State Viewer ────────────────────────────── */
+.bottom-panel {
+    flex: 1;
+    min-height: 60px;
+    border-top: 1px solid var(--border);
+}
+
+
+
 
 /* ── Toolbar ─── */
 .toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 16px;
+    background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid var(--border);
-    gap: 8px;
+    gap: 12px;
     flex-shrink: 0;
-    flex-wrap: wrap;
+    height: 44px;
+    /* Even more compact */
 }
 
 .toolbar-group {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
 }
 
 .toolbar-divider {
@@ -369,110 +587,70 @@ body {
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
     font-size: 11px;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
-    font-family: var(--font-main);
-    white-space: nowrap;
 }
+
 
 .tool-btn:hover {
     background: var(--bg-hover);
-    border-color: var(--accent-blue);
     color: var(--text-primary);
 }
 
-.tool-btn.accent {
-    border-color: var(--accent-purple);
-    color: var(--accent-purple);
+.play-btn {
+    width: 30px;
+    height: 30px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    /* Circle for small buttons */
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    font-size: 13px;
 }
 
-.tool-btn.accent:hover {
-    background: rgba(168, 85, 247, 0.15);
+.play-btn.primary {
+    width: 80px;
+    /* Wider for pill shape */
+    height: 34px;
+    border-radius: 50px;
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    box-shadow: 0 4px 12px rgba(90, 200, 250, 0.3);
+    font-weight: 700;
 }
 
-.tool-btn.delete-btn {
-    border-color: var(--accent-red);
-    color: var(--accent-red);
-}
-
-.tool-btn.delete-btn:hover {
-    background: rgba(239, 68, 68, 0.15);
-}
 
 .tool-select,
 .tool-input {
-    padding: 3px 6px;
+    padding: 4px 6px;
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     font-size: 11px;
-    font-family: var(--font-main);
 }
 
 .tool-input {
-    width: 56px;
-}
-
-/* playback */
-.playback-group {
-    gap: 3px;
-}
-
-.play-btn {
-    width: 32px;
-    height: 32px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-bright);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 14px;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.play-btn:hover {
-    background: var(--bg-hover);
-    border-color: var(--accent-cyan);
-}
-
-.play-btn.primary {
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    border-color: transparent;
-    color: white;
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-}
-
-.play-btn.primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
+    width: 50px;
 }
 
 .speed-control {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-left: 4px;
 }
 
 .speed-control input[type="range"] {
-    width: 60px;
-    accent-color: var(--accent-cyan);
+    width: 50px;
 }
 
-.speed-control span {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--accent-cyan);
-    min-width: 24px;
-}
 
-/* ── Circuit Area: Sidebar + Canvas ─── */
+/* ─── Circuit Area: Sidebar + Canvas ─── */
 .circuit-area {
     display: flex;
     flex: 1;
@@ -481,27 +659,27 @@ body {
 
 /* Gate Sidebar */
 .gate-sidebar {
-    width: 120px;
+    width: 140px;
+    /* Wider for presets */
     flex-shrink: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.1);
     border-right: 1px solid var(--border);
     overflow-y: auto;
-    overflow-x: hidden;
-    padding: 6px 4px;
-}
-
-.sidebar-section {
-    margin-bottom: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .sidebar-label {
-    font-size: 9px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     color: var(--text-muted);
-    padding: 0 2px 3px;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
+
 
 .sidebar-gates {
     display: flex;
@@ -635,19 +813,21 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5px 14px;
+    padding: 4px 12px;
     background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
+    height: 32px;
 }
 
 .panel-title {
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     color: var(--text-muted);
 }
+
 
 .step-info {
     font-size: 12px;

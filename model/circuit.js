@@ -225,8 +225,22 @@ export class InputState {
      */
     constructor(numQubits) {
         this.numQubits = numQubits;
+        this.presets = Array(numQubits).fill('|0⟩');
+        /** @type {boolean[]} Between qubit i and i+1 */
+        this.links = Array(Math.max(0, numQubits - 1)).fill(false);
         // Default to |0...0>
         this.vector = this._createZeroState(numQubits);
+        /** @type {[number, number][][]|null} */
+        this.densityMatrix = null;
+    }
+
+    get isMixed() {
+        return this.densityMatrix !== null;
+    }
+
+    setDensityMatrix(rho) {
+        this.densityMatrix = rho;
+        this.presets = null; // Clear presets if mixed
     }
 
     /**
@@ -238,6 +252,7 @@ export class InputState {
             throw new Error(`Vector length ${vec.length} does not match 2^${this.numQubits}`);
         }
         this.vector = vec;
+        this.densityMatrix = null; // Pure state overrides mixed
     }
 
     /**
@@ -261,35 +276,95 @@ export class InputState {
     toJSON() {
         return {
             numQubits: this.numQubits,
-            vector: this.vector
+            vector: this.vector,
+            presets: this.presets,
+            links: this.links
         };
     }
 
     static fromJSON(obj) {
         const s = new InputState(obj.numQubits);
+        if (obj.links) s.links = obj.links;
+        if (obj.presets) s.presets = obj.presets;
+
         if (obj.vector) {
             s.vector = obj.vector;
         } else if (obj.presets) {
-            // Backward compatibility for presets
-            // Convert presets to vector
-            // This is a one-time migration if we drop presets fully
-            // But let's just reconstruct it here temporarily or deprecate
-            // Re-implement tensor product logic just for migration if needed
-            // For now, let's just reset to |0...0> if migrating, 
-            // or we could implementing the old logic to convert.
-            // Let's implement the conversion to be nice.
-            s.vector = s._presetsToVector(obj.presets);
+            s.vector = s._presetsToVector(s.presets);
         }
         return s;
     }
 
-    // Helper for backward compatibility
+    // Helper to generate vector from presets (handling links)
     _presetsToVector(presets) {
-        let vec = [[1, 0]];
-        for (let q = 0; q < this.numQubits; q++) {
-            const p = INPUT_PRESETS[presets[q]] || INPUT_PRESETS['|0⟩'];
-            const qubitVec = [[p[0], p[1]], [p[2], p[3]]];
-            vec = this._tensorProduct(vec, qubitVec);
+        // 1. Identify clusters (from low to high index)
+        const clusters = [];
+        let currentCluster = [0];
+        for (let i = 0; i < this.numQubits - 1; i++) {
+            if (this.links[i]) {
+                currentCluster.push(i + 1);
+            } else {
+                clusters.push(currentCluster);
+                currentCluster = [i + 1];
+            }
+        }
+        clusters.push(currentCluster);
+
+        // 2. Tensor product each cluster's state
+        // To make q0 the LSB (rightmost), we must tensor from high index to low index:
+        // State = |q_high> ⊗ ... ⊗ |q_low>
+        let fullVec = [[1, 0]];
+        for (let i = clusters.length - 1; i >= 0; i--) {
+            const cluster = clusters[i];
+            const clusterVec = this._getClusterVector(cluster, presets[cluster[0]]);
+            fullVec = this._tensorProduct(fullVec, clusterVec);
+        }
+        return fullVec;
+    }
+
+    _getClusterVector(qubits, type) {
+        const size = qubits.length;
+        const dim = 1 << size;
+        const vec = Array.from({ length: dim }, () => [0, 0]);
+        const s2 = Math.SQRT1_2;
+
+        if (size === 1) {
+            const p = INPUT_PRESETS[type] || INPUT_PRESETS['|0⟩'];
+            return [[p[0], p[1]], [p[2], p[3]]];
+        }
+
+        // Entangled states (N-qubit)
+        switch (type) {
+            case 'Φ+': // (|00...0> + |11...1>) / sqrt(2)
+                vec[0] = [s2, 0];
+                vec[dim - 1] = [s2, 0];
+                break;
+            case 'Φ-': // (|00...0> - |11...1>) / sqrt(2)
+                vec[0] = [s2, 0];
+                vec[dim - 1] = [-s2, 0];
+                break;
+            case 'Ψ+': // (|0...01> + |1...10>) / sqrt(2)
+                vec[1] = [s2, 0];
+                vec[dim - 2] = [s2, 0];
+                break;
+            case 'Ψ-': // (|0...01> - |1...10>) / sqrt(2)
+                vec[1] = [s2, 0];
+                vec[dim - 2] = [-s2, 0];
+                break;
+            case 'GHZ': // Standard GHZ
+                vec[0] = [s2, 0];
+                vec[dim - 1] = [s2, 0];
+                break;
+            case 'W': // (|100> + |010> + |001>) / sqrt(N)
+                const val = 1 / Math.sqrt(size);
+                for (let i = 0; i < size; i++) {
+                    vec[1 << (size - 1 - i)] = [val, 0];
+                }
+                break;
+            default:
+                // Default to all |0>
+                vec[0] = [1, 0];
+                break;
         }
         return vec;
     }

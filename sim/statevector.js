@@ -5,6 +5,7 @@
 import { cAdd, cMul, cAbs2, SeededRNG } from './complex.js';
 import { SimulationStep } from '../model/circuit.js';
 import { applyExtraGate } from './gates_extra.js';
+import { DensityMatrixEngine } from './densitymatrix.js';
 
 // ─── Constants ─────────────────────────────────────────────
 
@@ -40,6 +41,11 @@ export class QuantumEngine {
      */
     simulate(circuit, inputState, measureMode = 'probability') {
         const numQubits = circuit.numQubits;
+
+        if (inputState.isMixed) {
+            return this.simulateMixed(circuit, inputState, measureMode);
+        }
+
         let state = inputState.toStateVector(); // Initial state
         const history = [];
 
