@@ -93,3 +93,11 @@ python3 -m http.server 8080
 - **H → Measure**: 重ね合わせの基本
 - **Bell State**: 量子もつれ (Entanglement)
 - **GHZ State**: 3量子ビットのもつれ
+
+
+## 使い方メモ
+1. フェッチ
+   git fetch --all
+2. チェックアウト
+3. Windowsの人はこっち
+   python -m http.server 8081
