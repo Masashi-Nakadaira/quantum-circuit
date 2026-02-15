@@ -123,6 +123,15 @@ export class SeededRNG {
  * @param {string} str
  * @returns {[number, number]}
  */
+// Re-export symbolic formatting from fraction.js for convenience
+export { formatComplexTeX } from './fraction.js';
+
+/**
+ * Parses a mathematical string into a complex number [re, im].
+ * Supports: "1/sqrt(2)", "i/2", "-1", "sqrt(3)/2 + i/2"
+ * @param {string} str
+ * @returns {[number, number]}
+ */
 export function parseComplexExpr(str) {
     str = str.replace(/\s+/g, '').toLowerCase();
     if (!str) return [0, 0];

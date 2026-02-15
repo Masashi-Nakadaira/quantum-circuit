@@ -3,6 +3,8 @@
 // ============================================================
 
 import { cAbs, cAbs2 } from '../sim/complex.js';
+import { renderTeX, stateVectorToTeX, formatComplexTeX } from './texRenderer.js';
+import { SymbolicValue } from '../sim/fraction.js';
 
 export class StateViewer {
     constructor(container) {
@@ -142,65 +144,19 @@ export class StateViewer {
         infoEl.textContent = `Values show theoretical probabilities for qubits |${labels}⟩`;
     }
 
-    // ─── Dirac Notation ──────────────────────────────────────
+    // ─── Dirac Notation (KaTeX) ───────────────────────────────
 
     _updateDirac(state, numQubits) {
         const el = document.getElementById('panel-dirac');
-        const dim = 1 << numQubits;
+        if (!el) return;
 
-        // Collect non-zero terms
-        const terms = [];
-        for (let i = 0; i < dim; i++) {
-            const [re, im] = state[i];
-            const mag = Math.sqrt(re * re + im * im);
-            if (mag > 1e-6) {
-                terms.push({ i, re, im, mag });
-            }
-        }
-        terms.sort((a, b) => b.mag - a.mag); // Descending magnitude
+        const texString = stateVectorToTeX(state, numQubits);
 
-        const maxShow = (numQubits >= 4) ? 8 : dim;
-        const showTerms = terms.slice(0, maxShow);
-        const hidden = terms.length - showTerms.length;
+        // Create a container for the TeX output
+        el.innerHTML = '<div class="state-formula tex-formula"></div>';
+        const formulaEl = el.querySelector('.tex-formula');
 
-        let qubitLabels = '';
-        for (let i = numQubits - 1; i >= 0; i--) qubitLabels += `q${i}`;
-        let html = `<div class="state-formula">|ψ⟩ = |${qubitLabels}⟩ = `;
-        if (showTerms.length === 0) html += '0';
-
-        html += showTerms.map(t => {
-            const bin = t.i.toString(2).padStart(numQubits, '0');
-            const coeff = this._formatComplex(t.re, t.im);
-            return `<span class="state-term">${coeff}<span class="ket">|${bin}⟩</span></span>`;
-        }).join(' + ');
-
-        if (hidden > 0) {
-            html += ` <span class="state-ellipsis">+ ${hidden} more terms...</span>`;
-        }
-        html += `</div>`;
-
-        el.innerHTML = html;
-    }
-
-    _formatComplex(re, im) {
-        const tol = 1e-6;
-        const absRe = Math.abs(re);
-        const absIm = Math.abs(im);
-
-        const fmt = (v) => {
-            if (Math.abs(v - 1) < tol) return '';
-            if (Math.abs(v + 1) < tol) return '-';
-            if (Math.abs(Math.abs(v) - Math.SQRT1_2) < tol) return (v > 0 ? '' : '-') + '0.707';
-            if (Math.abs(Math.abs(v) - 0.5) < tol) return (v > 0 ? '' : '-') + '0.5';
-            return v.toFixed(3);
-        };
-
-        if (absIm < tol) return fmt(re);
-        if (absRe < tol) {
-            if (Math.abs(absIm - 1) < tol) return (im > 0 ? 'i' : '-i');
-            return fmt(im) + 'i';
-        }
-        return `(${fmt(re)}${im > 0 ? '+' : ''}${fmt(im)}i)`;
+        renderTeX(texString, formulaEl, { displayMode: true });
     }
 
     // ─── Amplitudes Bar Chart ────────────────────────────────
@@ -208,10 +164,6 @@ export class StateViewer {
     _updateAmplitudes(state, numQubits) {
         const el = document.getElementById('panel-amplitudes');
         const dim = 1 << numQubits;
-
-        // For large n we clamp max bars?
-        // Spec: n<=5 -> 32 bars. OK to show all.
-        // But vertical scroll might be needed.
 
         let html = '<div class="amp-bars">';
         for (let i = 0; i < dim; i++) {
@@ -222,8 +174,10 @@ export class StateViewer {
             const hue = ((phase * 180 / Math.PI) + 360) % 360;
 
             const bin = i.toString(2).padStart(numQubits, '0');
-            const height = (mag * 100).toFixed(1); // relative to max? or absolute 1? 
-            // Since sum |a|^2 = 1, max |a| <= 1.
+            const height = (mag * 100).toFixed(1);
+
+            // Symbolic amplitude label
+            const symbLabel = formatComplexTeX(re, im);
 
             html += `
             <div class="amp-bar-container">
