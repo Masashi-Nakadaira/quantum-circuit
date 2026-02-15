@@ -93,3 +93,14 @@ python3 -m http.server 8080
 - **H → Measure**: 重ね合わせの基本
 - **Bell State**: 量子もつれ (Entanglement)
 - **GHZ State**: 3量子ビットのもつれ
+
+# Gitにuser.name と user.emailを登録
+git config --global user.email "あなたのメールアドレス"
+git config --global user.name "あなたの名前"
+
+## 使い方メモ
+1. フェッチ
+   git fetch --all
+2. チェックアウト
+3. Windowsの人はこっち
+   python -m http.server 8081
